@@ -25,7 +25,24 @@
     </div>
 
     <script>
-        function adjustHealth(type) {
+        // Load values from localStorage or set defaults
+        const loadValues = () => {
+            const savedCurrentHp = localStorage.getItem('currentHp');
+            const savedMaxHp = localStorage.getItem('maxHp');
+            document.getElementById('current-hp').value = savedCurrentHp ? parseInt(savedCurrentHp, 10) : 31;
+            document.getElementById('max-hp').value = savedMaxHp ? parseInt(savedMaxHp, 10) : 31;
+        };
+
+        // Save current HP and max HP to localStorage
+        const saveValues = () => {
+            const currentHp = document.getElementById('current-hp').value;
+            const maxHp = document.getElementById('max-hp').value;
+            localStorage.setItem('currentHp', currentHp);
+            localStorage.setItem('maxHp', maxHp);
+        };
+
+        // Adjust health logic
+        const adjustHealth = (type) => {
             const currentHpField = document.getElementById('current-hp');
             const maxHpField = document.getElementById('max-hp');
             const adjustValueField = document.getElementById('adjust-value');
@@ -41,6 +58,28 @@
             }
 
             currentHpField.value = currentHp;
-        }
+
+            // Save updated values
+            saveValues();
+        };
+
+        // Update localStorage when max HP is changed
+        document.getElementById('max-hp').addEventListener('change', () => {
+            const currentHpField = document.getElementById('current-hp');
+            const maxHpField = document.getElementById('max-hp');
+            let currentHp = parseInt(currentHpField.value, 10);
+            const maxHp = parseInt(maxHpField.value, 10);
+
+            // Adjust current HP if it's greater than max HP
+            if (currentHp > maxHp) {
+                currentHp = maxHp;
+                currentHpField.value = currentHp;
+            }
+
+            saveValues();
+        });
+
+        // Initialize the tracker
+        loadValues();
     </script>
 </div>
