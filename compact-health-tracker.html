@@ -1,0 +1,75 @@
+<div id="health-tracker" style="font-family: Arial, sans-serif; display: flex; align-items: center; gap: 10px; padding: 10px; background-color: #10161A; color: #FFFFFF; border-radius: 10px; max-width: 100%; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);">
+    <label for="current-hp" style="font-size: 14px;">Current HP:</label>
+    <input id="current-hp" type="number" value="31" min="0" readonly
+        style="width: 50px; text-align: center; font-size: 14px; padding: 5px; border: 1px solid #ccc; border-radius: 5px;">
+
+    <label for="max-hp" style="font-size: 14px;">Max HP:</label>
+    <input id="max-hp" type="number" value="31" min="1"
+        style="width: 50px; text-align: center; font-size: 14px; padding: 5px; border: 1px solid #ccc; border-radius: 5px;">
+
+    <label for="adjust-value" style="font-size: 14px;">Adjust:</label>
+    <input id="adjust-value" type="number" value="0"
+        style="width: 50px; text-align: center; font-size: 14px; padding: 5px; border: 1px solid #ccc; border-radius: 5px;">
+
+    <button onclick="adjustHealth('heal')" style="padding: 5px 10px; background-color: #2ecc71; color: white; border: none; border-radius: 5px; font-size: 14px; cursor: pointer;">Heal</button>
+    <button onclick="adjustHealth('damage')" style="padding: 5px 10px; background-color: #e74c3c; color: white; border: none; border-radius: 5px; font-size: 14px; cursor: pointer;">Damage</button>
+</div>
+
+<script>
+    // Load values from localStorage or set defaults
+    const loadValues = () => {
+        const savedCurrentHp = localStorage.getItem('currentHp');
+        const savedMaxHp = localStorage.getItem('maxHp');
+        document.getElementById('current-hp').value = savedCurrentHp ? parseInt(savedCurrentHp, 10) : 31;
+        document.getElementById('max-hp').value = savedMaxHp ? parseInt(savedMaxHp, 10) : 31;
+    };
+
+    // Save current HP and max HP to localStorage
+    const saveValues = () => {
+        const currentHp = document.getElementById('current-hp').value;
+        const maxHp = document.getElementById('max-hp').value;
+        localStorage.setItem('currentHp', currentHp);
+        localStorage.setItem('maxHp', maxHp);
+    };
+
+    // Adjust health logic
+    const adjustHealth = (type) => {
+        const currentHpField = document.getElementById('current-hp');
+        const maxHpField = document.getElementById('max-hp');
+        const adjustValueField = document.getElementById('adjust-value');
+
+        let currentHp = parseInt(currentHpField.value, 10);
+        const maxHp = parseInt(maxHpField.value, 10);
+        const adjustValue = parseInt(adjustValueField.value, 10) || 0;
+
+        if (type === 'heal') {
+            currentHp = Math.min(maxHp, currentHp + adjustValue);
+        } else if (type === 'damage') {
+            currentHp = Math.max(0, currentHp - adjustValue);
+        }
+
+        currentHpField.value = currentHp;
+
+        // Save updated values
+        saveValues();
+    };
+
+    // Update localStorage when max HP is changed
+    document.getElementById('max-hp').addEventListener('change', () => {
+        const currentHpField = document.getElementById('current-hp');
+        const maxHpField = document.getElementById('max-hp');
+        let currentHp = parseInt(currentHpField.value, 10);
+        const maxHp = parseInt(maxHpField.value, 10);
+
+        // Adjust current HP if it's greater than max HP
+        if (currentHp > maxHp) {
+            currentHp = maxHp;
+            currentHpField.value = currentHp;
+        }
+
+        saveValues();
+    });
+
+    // Initialize the tracker
+    loadValues();
+</script>
