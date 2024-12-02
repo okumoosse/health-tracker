@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Initiative Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            margin: 20px;
+        }
+        .tracker-container {
+            margin-bottom: 20px;
+            border: 1px solid #444;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #2b2b2b;
+        }
+        .participant {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #3a3a3a;
+        }
+        .participant-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .participant-row input, .participant-row select {
+            background-color: #444;
+            color: #fff;
+            border: 1px solid #666;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        button {
+            background-color: #555;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #777;
+        }
+        iframe {
+            border: none;
+            width: 800px;
+            height: 50px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Initiative Tracker</h1>
+    <div id="tracker" class="tracker-container">
+        <!-- Participants will be added dynamically here -->
+    </div>
+    <button id="addParticipant">Add Participant</button>
+    <button id="sortParticipants">Sort by Initiative</button>
+
+    <script>
+        let tracker = document.getElementById('tracker');
+        let participantCount = 0;
+
+        document.getElementById('addParticipant').addEventListener('click', () => {
+            participantCount++;
+
+            // Create participant container
+            let participant = document.createElement('div');
+            participant.className = 'participant';
+
+            // Create row for participant details
+            let participantRow = document.createElement('div');
+            participantRow.className = 'participant-row';
+            participantRow.innerHTML = `
+                <input type="text" placeholder="Name" />
+                <select onchange="toggleHealthTracker(this)">
+                    <option value="player">Player</option>
+                    <option value="enemy">Enemy</option>
+                </select>
+                <input type="number" placeholder="Initiative" class="initiative" />
+                <input type="number" placeholder="Current HP" />
+                <input type="number" placeholder="Max HP" />
+                <button onclick="removeParticipant(this)">Remove</button>
+            `;
+
+            // Append row to participant container
+            participant.appendChild(participantRow);
+
+            // Add health tracker for enemies
+            let healthTracker = document.createElement('div');
+            healthTracker.className = 'health-tracker-container';
+            healthTracker.style.display = 'none';
+            healthTracker.innerHTML = `
+                <iframe
+                    src="https://okumoosse.github.io/health-tracker.io/compact-health-tracker.html"
+                    title="Compact Health Tracker"
+                ></iframe>
+            `;
+
+            participant.appendChild(healthTracker);
+            tracker.appendChild(participant);
+        });
+
+        function removeParticipant(button) {
+            button.parentElement.parentElement.remove();
+        }
+
+        function toggleHealthTracker(selectElement) {
+            const trackerContainer = selectElement.parentElement.parentElement.querySelector('.health-tracker-container');
+            if (selectElement.value === 'enemy') {
+                trackerContainer.style.display = 'block';
+            } else {
+                trackerContainer.style.display = 'none';
+            }
+        }
+
+        document.getElementById('sortParticipants').addEventListener('click', () => {
+            let participants = Array.from(tracker.querySelectorAll('.participant'));
+            participants.sort((a, b) => {
+                let initiativeA = parseInt(a.querySelector('.initiative').value) || 0;
+                let initiativeB = parseInt(b.querySelector('.initiative').value) || 0;
+                return initiativeB - initiativeA;
+            });
+            tracker.innerHTML = '';
+            participants.forEach(participant => tracker.appendChild(participant));
+        });
+    </script>
+</body>
+</html>
