@@ -51,6 +51,10 @@
         button:hover {
             background-color: #777;
         }
+        .highlight {
+            background-color: #555 !important;
+            border: 2px solid #ffcc00;
+        }
         iframe {
             border: none;
             width: 800px;
@@ -66,10 +70,12 @@
     </div>
     <button id="addParticipant">Add Participant</button>
     <button id="sortParticipants">Sort by Initiative</button>
+    <button id="nextTurn">Next Turn</button>
 
     <script>
         let tracker = document.getElementById('tracker');
         let participantCount = 0;
+        let currentTurnIndex = -1;
 
         document.getElementById('addParticipant').addEventListener('click', () => {
             participantCount++;
@@ -133,6 +139,20 @@
             });
             tracker.innerHTML = '';
             participants.forEach(participant => tracker.appendChild(participant));
+        });
+
+        document.getElementById('nextTurn').addEventListener('click', () => {
+            let participants = Array.from(tracker.querySelectorAll('.participant'));
+            if (participants.length === 0) return;
+
+            // Remove highlight from all participants
+            participants.forEach(p => p.classList.remove('highlight'));
+
+            // Increment the turn index
+            currentTurnIndex = (currentTurnIndex + 1) % participants.length;
+
+            // Highlight the current turn participant
+            participants[currentTurnIndex].classList.add('highlight');
         });
     </script>
 </body>
